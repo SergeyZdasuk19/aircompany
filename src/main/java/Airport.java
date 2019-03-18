@@ -1,3 +1,4 @@
+import models.ClassificationLevel;
 import planes.ExperimentalPlane;
 import models.MilitaryType;
 import planes.MilitaryPlane;
@@ -87,7 +88,7 @@ public class Airport {
     }
 
     public Airport sortByMaxLoadCapacity() {
-        Collections.sort(planes, (Plane o1,Plane o2) -> o1.getMinLoadCapacity() - o2.getMinLoadCapacity());
+        Collections.sort(planes, (Plane o1, Plane o2) -> o1.getMinLoadCapacity() - o2.getMinLoadCapacity());
         return this;
     }
 
@@ -95,7 +96,49 @@ public class Airport {
         return planes;
     }
 
+    public boolean isHasNextPlaneMaxCapacity(List<Plane> planes) {
+        Airport airport = new Airport(planes);
+        airport.sortByMaxLoadCapacity();
+        List<Plane> planesSortedByMaxLoadCapacity = airport.getPlanes();
+        boolean nextPlaneMaxLoadCapacityIsHigherThanCurrent = true;
+        for (int i = 0; i < planesSortedByMaxLoadCapacity.size() - 1; i++) {
+            Plane currentPlane = planesSortedByMaxLoadCapacity.get(i);
+            Plane nextPlane = planesSortedByMaxLoadCapacity.get(i + 1);
+            if (currentPlane.getMinLoadCapacity() > nextPlane.getMinLoadCapacity()) {
+                nextPlaneMaxLoadCapacityIsHigherThanCurrent = false;
+                break;
+            }
+        }
+        return nextPlaneMaxLoadCapacityIsHigherThanCurrent;
+    }
 
+    public boolean isAtLeastOneBomberInMilitaryPlanes(List<Plane> planes){
+        Airport airport = new Airport(planes);
+        List<MilitaryPlane> bomberMilitaryPlanes = airport.getBomberMilitaryPlanes();
+        boolean flag = false;
+        for (MilitaryPlane militaryPlane : bomberMilitaryPlanes) {
+            if ((militaryPlane.getType() == MilitaryType.BOMBER)) {
+                flag = true;
+            }
+            else {
+                return flag;
+            }
+        }
+        return flag;
+    }
+
+    public boolean isExperimentalPlanesHasClassificationLevelHigherThanUnclassified(List<Plane> planes){
+        Airport airport = new Airport(planes);
+        List<ExperimentalPlane> experimentalPlanes = airport.getExperimentalPlanes();
+        boolean hasUnclassifiedPlanes = false;
+        for(ExperimentalPlane experimentalPlane : experimentalPlanes){
+            if(experimentalPlane.getClassificationLevel() == ClassificationLevel.UNCLASSIFIED){
+                hasUnclassifiedPlanes = true;
+                break;
+            }
+        }
+        return hasUnclassifiedPlanes;
+    }
     @Override
     public String toString() {
         return "Airport{" +
